@@ -15,7 +15,7 @@ const App = () => {
           <div className="content">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/add-job" element={<AddPropertyPage />} />
+              <Route path="/add-property" element={<AddPropertyPage />} />
               <Route path='*' element={<NotFoundPage />} />
             </Routes>
           </div>
