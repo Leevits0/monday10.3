@@ -15,6 +15,16 @@ const propertySchema = new mongoose.Schema({
   yearBuilt: { type: Number, required: true } // Year the property was constructed
 });
 
+
+//add  virtual field id
+propertySchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    return ret;
+  }
+});
+
 const Property = mongoose.model('Property', propertySchema);
 
 module.exports = Property;

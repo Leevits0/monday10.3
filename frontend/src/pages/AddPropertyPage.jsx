@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AddPropertyPage = () => {
   const [title, setTitle] = useState("");
@@ -27,8 +28,10 @@ const AddPropertyPage = () => {
       if (!res.ok) {
         throw new Error("Failed to add property");
       }
+      toast.success("Property added successfully!");
     } catch (error) {
       console.error(error);
+      toast.error("Error adding property");
       return false;
     }
     return true;
