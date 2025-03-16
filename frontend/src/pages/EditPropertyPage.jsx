@@ -96,10 +96,10 @@ const EditPropertyPage = () => {
 
     const success = await updateProperty(updatedProperty);
     if (success) {
-      // toast.success("Property Updated Successfully");
+      toast.success("Property Updated Successfully");
       navigate(`/properties/${id}`);
     } else {
-      // toast.error("Failed to update the Property");
+      toast.error("Failed to update the Property");
     }
   };
 

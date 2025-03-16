@@ -7,32 +7,39 @@ const Signup = () => {
   
   // Define input fields using custom useField hook
   const name = useField("text");
-  const email = useField("email");
+  const userName = useField("text");
   const password = useField("password");
   const phoneNumber = useField("text");
   const gender = useField("text");
   const dateOfBirth = useField("date");
   const membershipStatus = useField("text");
   const bio = useField("text");
-  const address = useField("text");
+  const street = useField("text");
+  const city = useField("text");
+  const state = useField("text");
+  const zipCode = useField("text");
   const profilePicture = useField("text");
 
-  const { signup, error, loading } = useSignup("/api/users/signup");
+  const { signup, error, isLoading } = useSignup("http://localhost:4000/api/users/signup");
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
     const newUser = {
       name: name.value,
-      email: email.value,
+      username: userName.value, // ✅ Matches backend schema
       password: password.value,
       phone_number: phoneNumber.value,
+      profilePicture: profilePicture.value, // ✅ Matches schema
       gender: gender.value,
       date_of_birth: dateOfBirth.value,
-      membership_status: membershipStatus.value,
-      bio: bio.value,
-      address: address.value,
-      profile_picture: profilePicture.value,
+      role: membershipStatus.value.toLowerCase(), // ✅ Convert role to lowercase
+      address: {
+        street: street.value, 
+        city: city.value,
+        state: state.value,
+        zipCode: zipCode.value
+      }
     };
 
     const success = await signup(newUser);
@@ -50,8 +57,8 @@ const Signup = () => {
         <label>Name:</label>
         <input {...name} required />
         
-        <label>Email Address:</label>
-        <input {...email} required />
+        <label>Username:</label>
+        <input {...userName} required />
         
         <label>Password:</label>
         <input {...password} required />
@@ -70,20 +77,34 @@ const Signup = () => {
         <label>Date of Birth:</label>
         <input {...dateOfBirth} required />
         
-        <label>Membership Status:</label>
-        <input {...membershipStatus} required />
+        <label>Membership Status (Role):</label>
+        <select {...membershipStatus} required>
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+          <option value="moderator">Moderator</option>
+        </select>
 
         <label>Bio:</label>
         <textarea {...bio} placeholder="Tell us about yourself..." />
 
-        <label>Address:</label>
-        <input {...address} placeholder="Enter your address" required />
+        <label>Street:</label>
+        <input {...street} required />
+
+        <label>City:</label>
+        <input {...city} required />
+
+        <label>State:</label>
+        <input {...state} required />
+
+        <label>ZIP Code:</label>
+        <input {...zipCode} required />
 
         <label>Profile Picture URL:</label>
         <input {...profilePicture} placeholder="Paste profile picture URL" />
 
-        <button disabled={loading}>
-          {loading ? "Signing up..." : "Sign Up"}
+        <button disabled={isLoading}>
+          {isLoading ? "Signing up..." : "Sign Up"}
         </button>
       </form>
 

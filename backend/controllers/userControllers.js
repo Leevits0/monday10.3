@@ -2,16 +2,16 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Generate JWT
+// ✅ Generate JWT Token
 const generateToken = (_id) => {
-  return jwt.sign({_id}, process.env.SECRET, {
+  return jwt.sign({ _id }, process.env.SECRET, {
     expiresIn: "3d",
   });
 };
 
-// @desc    Register new user
-// @route   POST /api/users/signup
-// @access  Public
+// ✅ @desc    Register new user
+// ✅ @route   POST /api/users/signup
+// ✅ @access  Public
 const signupUser = async (req, res) => {
   const {
     name,
@@ -20,12 +20,14 @@ const signupUser = async (req, res) => {
     phone_number,
     gender,
     date_of_birth,
-    membership_status,
+    role, // ✅ Fixed (was membership_status)
     bio,
     address,
-    profile_picture,
+    profilePicture, // ✅ Fixed (was profile_picture)
   } = req.body;
+
   try {
+    // ✅ Validate required fields
     if (
       !name ||
       !username ||
@@ -33,25 +35,31 @@ const signupUser = async (req, res) => {
       !phone_number ||
       !gender ||
       !date_of_birth ||
-      !membership_status ||
-      !address
+      !role ||
+      !address ||
+      !address.street ||
+      !address.city ||
+      !address.state ||
+      !address.zipCode
     ) {
-      res.status(400);
-      return res.status(400).json({error: "Please add all required fields"});
+      return res.status(400).json({ error: "Please add all required fields." });
     }
-    // Check if user exists
-    const userExists = await User.findOne({username});
 
+    // ✅ Validate role
+    if (!["admin", "user", "moderator"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role. Choose admin, user, or moderator." });
+    }
+
+    // ✅ Check if user already exists
+    const userExists = await User.findOne({ username });
     if (userExists) {
-      res.status(400);
-      return res.status(400).json({error: "User already exists"});
+      return res.status(400).json({ error: "User already exists" });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // ✅ Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // ✅ Create new user
     const user = await User.create({
       name,
       username,
@@ -59,54 +67,51 @@ const signupUser = async (req, res) => {
       phone_number,
       gender,
       date_of_birth,
-      membership_status,
-      bio: bio || "",
-      address,
-      profile_picture: profile_picture || "",
+      role, // ✅ Correct field name
+      bio: bio || "", // Default empty bio
+      address, // ✅ Address object
+      profilePicture: profilePicture || "https://example.com/default-profile.png", // ✅ Default profile pic
     });
 
     if (user) {
-      // console.log(user._id);
       const token = generateToken(user._id);
-      res.status(201).json({username, token});
+      return res.status(201).json({ username, token });
     } else {
-      res.status(400);
-      throw new Error("Invalid user data");
+      throw new Error("User creation failed.");
     }
   } catch (error) {
-    res.status(400).json({error: error.message});
+    res.status(400).json({ error: error.message });
   }
 };
 
-// @desc    Authenticate a user
-// @route   POST /api/users/login
-// @access  Public
+// ✅ @desc    Authenticate a user
+// ✅ @route   POST /api/users/login
+// ✅ @access  Public
 const loginUser = async (req, res) => {
-  const {username, password} = req.body;
+  const { username, password } = req.body;
   try {
-    // Check for user email
-    const user = await User.findOne({username});
+    // ✅ Check if user exists
+    const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const token = generateToken(user._id);
-      res.status(200).json({username, token});
+      return res.status(200).json({ username, token });
     } else {
-      res.status(400);
       throw new Error("Invalid credentials");
     }
   } catch (error) {
-    res.status(400).json({error: error.message});
+    res.status(400).json({ error: error.message });
   }
 };
 
-// @desc    Get user data
-// @route   GET /api/users/me
-// @access  Private
+// ✅ @desc    Get user data
+// ✅ @route   GET /api/users/me
+// ✅ @access  Private
 const getMe = async (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    res.status(400).json({error: error.message});
+    res.status(400).json({ error: error.message });
   }
 };
 

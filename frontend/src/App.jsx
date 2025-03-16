@@ -9,7 +9,7 @@ import PropertyPage from "./pages/PropertyPage";
 import EditPropertyPage from "./pages/EditPropertyPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup from "./pages/SignUp";
 
 const App = () => {
   return (
